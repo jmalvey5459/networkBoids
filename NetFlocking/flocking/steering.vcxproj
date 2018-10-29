@@ -11,24 +11,26 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\Lab 3\EGP Networking Base FW\source\egp-mancala\events\EventManager.cpp" />
-    <ClCompile Include="..\..\..\Lab 3\EGP Networking Base FW\source\egp-mancala\util\Thread.c" />
     <ClCompile Include="Boid.cpp" />
+    <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="Flock.cpp" />
     <ClCompile Include="Client_Main.cpp" />
     <ClCompile Include="InputInterface.cpp" />
+    <ClCompile Include="LinkedList.cpp" />
     <ClCompile Include="SDLInterface.cpp" />
+    <ClCompile Include="Thread.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Lab 3\EGP Networking Base FW\source\egp-mancala\events\Event.h" />
-    <ClInclude Include="..\..\..\Lab 3\EGP Networking Base FW\source\egp-mancala\events\EventManager.h" />
-    <ClInclude Include="..\..\..\Lab 3\EGP Networking Base FW\source\egp-mancala\util\Thread.h" />
     <ClInclude Include="Boid.h" />
     <ClInclude Include="Define.h" />
+    <ClInclude Include="Event.h" />
+    <ClInclude Include="EventManager.h" />
     <ClInclude Include="Flock.h" />
     <ClInclude Include="InputInterface.h" />
+    <ClInclude Include="LinkedList.h" />
     <ClInclude Include="SDLInterface.h" />
     <ClInclude Include="ServerDefine.h" />
+    <ClInclude Include="Thread.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{07ED8114-0659-4424-9468-50DBBEA5882A}</ProjectGuid>
