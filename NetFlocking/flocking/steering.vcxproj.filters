@@ -25,6 +25,18 @@
     <Filter Include="Source Files\Input">
       <UniqueIdentifier>{601306d5-fe2c-486c-95ae-5d6188b23f5b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Util">
+      <UniqueIdentifier>{5cc99b4f-4289-4b5a-82e5-7867650c7737}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Util">
+      <UniqueIdentifier>{26e9e12c-34bd-4709-b2e7-b3c7b24d9569}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Event">
+      <UniqueIdentifier>{d2d8e546-6bda-4ad9-872b-293bad7a19ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Event">
+      <UniqueIdentifier>{2a084631-39e4-4c52-8998-a13c1b0ed338}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Boid.cpp">
@@ -41,6 +53,12 @@
     </ClCompile>
     <ClCompile Include="InputInterface.cpp">
       <Filter>Source Files\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Lab 3\EGP Networking Base FW\source\egp-mancala\util\Thread.c">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Lab 3\EGP Networking Base FW\source\egp-mancala\events\EventManager.cpp">
+      <Filter>Source Files\Event</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -61,6 +79,15 @@
     </ClInclude>
     <ClInclude Include="ServerDefine.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Lab 3\EGP Networking Base FW\source\egp-mancala\util\Thread.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Lab 3\EGP Networking Base FW\source\egp-mancala\events\EventManager.h">
+      <Filter>Header Files\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Lab 3\EGP Networking Base FW\source\egp-mancala\events\Event.h">
+      <Filter>Header Files\Event</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

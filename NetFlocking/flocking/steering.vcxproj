@@ -11,6 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\Lab 3\EGP Networking Base FW\source\egp-mancala\events\EventManager.cpp" />
+    <ClCompile Include="..\..\..\Lab 3\EGP Networking Base FW\source\egp-mancala\util\Thread.c" />
     <ClCompile Include="Boid.cpp" />
     <ClCompile Include="Flock.cpp" />
     <ClCompile Include="Client_Main.cpp" />
@@ -18,6 +20,9 @@
     <ClCompile Include="SDLInterface.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\Lab 3\EGP Networking Base FW\source\egp-mancala\events\Event.h" />
+    <ClInclude Include="..\..\..\Lab 3\EGP Networking Base FW\source\egp-mancala\events\EventManager.h" />
+    <ClInclude Include="..\..\..\Lab 3\EGP Networking Base FW\source\egp-mancala\util\Thread.h" />
     <ClInclude Include="Boid.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="Flock.h" />

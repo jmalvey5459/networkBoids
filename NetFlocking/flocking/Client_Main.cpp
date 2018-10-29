@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
 	//std::cout << "Flock Size: " << sizeof(Flock) << "\n";
 
 	//network modes
-	int dataMode = COUPLED_MODE;
+	int dataMode = PUSH_MODE;
 
 	peer->Startup(1, &sd, 1);
 
