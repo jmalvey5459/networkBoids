@@ -160,6 +160,7 @@ int main(int const argc, char const *const *const argv)
 			//Jack
 			case DATA_SHARE:
 			{
+				//take in flock and send it to the other client
 				if (packet->systemAddress == clients[0].clientIP)
 				{
 
@@ -187,23 +188,35 @@ int main(int const argc, char const *const *const argv)
 			//Jack
 			case DATA_COUPLED:
 			{
+				Flock coupledFlock(NUM_BOIDS*2);
 
+				//read coupled flock into bigger flock
+				coupledFlock.readFromBitstream(packet);
+				if (packet->systemAddress == clients[0].clientIP)
+				{
+					if (clients[1].instantiated == true)
+					{
+
+						RakNet::BitStream client1Flock;
+						coupledFlock.writeToBitstream(client1Flock, RECIEVE_COUPLEDFLOCK_DATA);
+						peer->Send(&client1Flock, HIGH_PRIORITY, RELIABLE_ORDERED, 0, clients[0].clientIP, false);
+					}
+				}
+				else if (packet->systemAddress == clients[1].clientIP)
+				{
+					if (clients[0].instantiated == true)
+					{
+
+						RakNet::BitStream client0Flock;
+						coupledFlock.writeToBitstream(client0Flock, RECIEVE_COUPLEDFLOCK_DATA);
+						peer->Send(&client0Flock, HIGH_PRIORITY, RELIABLE_ORDERED, 0, clients[1].clientIP, false);
+					}
+					
+				}
 			}
-			break;
-			case ID_SEND_TO_ALL_FROM_SERVER:
-			{
-				GameMessageData* temp;
-				temp = (GameMessageData*)packet->data;
-				GameMessageData gameMessage = *temp;
-				//gameMessage.ID = ID_LOCAL_PRINT;
-
-				//printf(gameMessage.msg, "\n");
-
-				printf("\n");
-				peer->Send((char*)&gameMessage, sizeof(gameMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
-
-			}
-			break;
+			break; 
+			case RECIEVE_FLOCK2_DATA:
+				break;
 			default:
 				printf("Message with identifier %i has arrived.\n", packet->data[0]);
 				break;

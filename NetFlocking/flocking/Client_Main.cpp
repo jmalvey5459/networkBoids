@@ -44,6 +44,7 @@ int main(int argc, char *argv[]) {
 	SDLInterface::getInstance()->init(WIDTH, HEIGHT, TITLE);
 	Flock flock = Flock(NUM_BOIDS);
 	Flock flock2 = Flock(NUM_BOIDS);
+	Flock flockCouple = Flock(NUM_BOIDS * 2);
 
 	Uint32 iTime = SDL_GetTicks();
 	Uint32 iTime2 = 0;
@@ -55,12 +56,12 @@ int main(int argc, char *argv[]) {
 	char str[512];
 	RakNet::SocketDescriptor sd;
 	bool twoFlocks = false;
-
+	bool coupleReadyToSend = false;
 
 	//std::cout << "Flock Size: " << sizeof(Flock) << "\n";
 
 	//network modes
-	int dataMode = SHARE_MODE;
+	int dataMode = COUPLED_MODE;
 
 	peer->Startup(1, &sd, 1);
 
@@ -123,16 +124,30 @@ int main(int argc, char *argv[]) {
 			{
 				//std::cout << "New Flock Data Recieved\n";
 				flock.readFromBitstream(packet);
-				
 			}
 			break;
 			case RECIEVE_FLOCK2_DATA:
 			{
 				twoFlocks = true;
 				flock2.readFromBitstream(packet);
+				if (dataMode == COUPLED_MODE)
+				{
+					for (int i = NUM_BOIDS; i < (NUM_BOIDS*2); i++)
+					{
+						//fill the second half of the coupled flock with the boids list
+						flockCouple.boidsList[i] = flock2.boidsList[i - NUM_BOIDS];
+					}
+					//now that the full coupled Boids list is available, we can send it!
+					coupleReadyToSend = true;
+				}
+			}
+			break; 
+			case RECIEVE_COUPLEDFLOCK_DATA:
+			{
+				//std::cout << "New Flock Data Recieved\n";
+				flockCouple.readFromBitstream(packet);
 			}
 			break;
-
 			default:
 				//printf("Message with identifier %i has arrived.\n", packet->data[0]);
 				break;
@@ -143,6 +158,7 @@ int main(int argc, char *argv[]) {
 			// send data to server
 			switch (dataMode)
 			{
+			//Jack
 			case PUSH_MODE:
 			{
 				if (iTime2 - iTime >= TICK) {
@@ -155,6 +171,7 @@ int main(int argc, char *argv[]) {
 				}
 			}
 			break;
+			//Jack
 			case SHARE_MODE:
 			{
 				if (iTime2 - iTime >= TICK) {
@@ -168,17 +185,43 @@ int main(int argc, char *argv[]) {
 
 			}
 			break;
+			//Jack
 			case COUPLED_MODE:
 			{
+				if (iTime2 - iTime >= TICK) {
+					iTime = SDL_GetTicks();
 
+					RakNet::BitStream sendData;
+					flock.update();
+					//send state to other client after updating
+					flock.writeToBitstream(sendData, RECIEVE_FLOCK2_DATA);
+					peer->Send(&sendData, HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
+					for (int i = 0; i < NUM_BOIDS; i++)
+					{
+						//fill the first half of the coupled flock with the boids list
+						flockCouple.boidsList[i] = flock.boidsList[i];
+					}
+				}
+				if (coupleReadyToSend)
+				{
+					coupleReadyToSend = false;
+					RakNet::BitStream sendData;
+					flockCouple.writeToBitstream(sendData, DATA_COUPLED);
+					peer->Send(&sendData, HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
+				}
 			}
 			break;
 			}
-
-			flock.render();
-			if(twoFlocks)	
-				flock2.render();
-
+			if (dataMode == COUPLED_MODE)
+			{
+				flockCouple.render();
+			}
+			else {
+			
+				flock.render();
+				if (twoFlocks)
+					flock2.render();
+			}
 			update();
 		}
 	
