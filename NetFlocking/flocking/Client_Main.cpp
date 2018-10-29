@@ -43,6 +43,7 @@ void update() {
 int main(int argc, char *argv[]) {
 	SDLInterface::getInstance()->init(WIDTH, HEIGHT, TITLE);
 	Flock flock = Flock(NUM_BOIDS);
+	Flock flock2 = Flock(NUM_BOIDS);
 
 	Uint32 iTime = SDL_GetTicks();
 	Uint32 iTime2 = 0;
@@ -53,6 +54,10 @@ int main(int argc, char *argv[]) {
 	const short SERVERPORT = 60000;
 	char str[512];
 	RakNet::SocketDescriptor sd;
+	bool twoFlocks = false;
+
+
+	//std::cout << "Flock Size: " << sizeof(Flock) << "\n";
 
 	//network modes
 	int dataMode = SHARE_MODE;
@@ -105,43 +110,61 @@ int main(int argc, char *argv[]) {
 				std::cout << "Sent client flocking data to server" << std::endl;
 				//send out client data to server
 				// ****TODO Probably load the flock up with boids before it's connected to the server
-				ClientData sendData;
-				sendData.clientFlock = flock;
+				RakNet::BitStream sendData;
+				flock.update();
+				flock.writeToBitstream(sendData,SEND_CLIENTDATA);
 				//sendData.clientFlock.boids = flock.boids;
-				sendData.ID = SEND_CLIENTDATA;
-				peer->Send((char*)&sendData, sizeof(sendData), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+				
+				peer->Send(&sendData, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+
 			}
 			break;
 			case RECIEVE_FLOCK_DATA:
 			{
-				ClientData *updatedFlock;
-				updatedFlock = (ClientData*)packet->data;
-				flock = updatedFlock->clientFlock;
-
+				//std::cout << "New Flock Data Recieved\n";
+				flock.readFromBitstream(packet);
+				
 			}
 			break;
+			case RECIEVE_FLOCK2_DATA:
+			{
+				twoFlocks = true;
+				flock2.readFromBitstream(packet);
+			}
+			break;
+
+			default:
+				//printf("Message with identifier %i has arrived.\n", packet->data[0]);
+				break;
 			}
 		}
-			//run local boids
-			/*
 			iTime2 = SDL_GetTicks();
-
-			if (iTime2 - iTime >= TICK) {
-				iTime = SDL_GetTicks();
-				flock.update();
-			}
-			*/
 
 			// send data to server
 			switch (dataMode)
 			{
 			case PUSH_MODE:
 			{
-
+				if (iTime2 - iTime >= TICK) {
+					iTime = SDL_GetTicks();
+					
+					ClientData temp;
+					temp.ID = DATA_PUSH;
+					//printf("sending push request\n");
+					peer->Send((char*)&temp, sizeof(temp), HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
+				}
 			}
 			break;
 			case SHARE_MODE:
 			{
+				if (iTime2 - iTime >= TICK) {
+					iTime = SDL_GetTicks();
+
+					RakNet::BitStream sendData;
+					flock.update();
+					flock.writeToBitstream(sendData, DATA_SHARE);
+					peer->Send(&sendData, HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
+				}
 
 			}
 			break;
@@ -153,6 +176,9 @@ int main(int argc, char *argv[]) {
 			}
 
 			flock.render();
+			if(twoFlocks)	
+				flock2.render();
+
 			update();
 		}
 	

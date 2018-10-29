@@ -136,9 +136,8 @@ void Flock::render() {
 		boidsList[iter].render();
 }
 
-void Flock::writeToBitstream(RakNet::BitStream& bsOut) {
-	unsigned char typeID = SEND_CLIENTDATA;
-
+void Flock::writeToBitstream(RakNet::BitStream& bsOut, unsigned char typeID) {
+	
 	bsOut.Write(typeID);
 
 	for (int iter = 0; iter < count; iter++) {
@@ -162,7 +161,8 @@ void Flock::writeToBitstream(RakNet::BitStream& bsOut) {
 
 void Flock::readFromBitstream(RakNet::Packet* packet) {
 	RakNet::BitStream bsIn(packet->data, packet->length, false);
-	
+	unsigned char typeID;
+	bsIn.Read(typeID);
 	for (int iter = 0; iter < count; iter++) {
 		bsIn.Read(boidsList[iter].numOfNeighbors);
 		bsIn.Read(boidsList[iter].pos[0]);

@@ -40,7 +40,7 @@ public:
 	void update();
 	void render();
 
-	void writeToBitstream(RakNet::BitStream& bsOut);
+	void writeToBitstream(RakNet::BitStream& bsOut, unsigned char typeID);
 	void readFromBitstream(RakNet::Packet* packet);
 
 	/*Flock operator=(const Flock& b)

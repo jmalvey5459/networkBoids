@@ -88,7 +88,7 @@ int main(int const argc, char const *const *const argv)
 				if (clients[0].instantiated == false)
 				{
 					//clients[0] = gameMessage;
-					clients[0].clientFlock = gameMessage->clientFlock;
+					clients[0].clientFlock.readFromBitstream(packet);
 					clients[0].clientIP = packet->systemAddress;
 					clients[0].instantiated = true;
 					printf("Client 1 connected \n");
@@ -96,49 +96,93 @@ int main(int const argc, char const *const *const argv)
 				else if (clients[1].instantiated == false)
 				{
 					//clients[1] = *gameMessage;
-					clients[1].clientFlock = gameMessage->clientFlock;
+					clients[1].clientFlock.readFromBitstream(packet);
 					clients[1].clientIP = packet->systemAddress;
 					clients[1].instantiated = true;
 					printf("Client 2 connected \n");
 				}
 
-
 				// ****TODO: Default to data push, simulate both ClientData flocks on server and send to peers for rendering
 				if (packet->systemAddress == clients[0].clientIP)
 				{
-					ClientData client0Flock;
-					clients[0].clientFlock.update();
-					client0Flock = clients[0];
-					client0Flock.ID = RECIEVE_FLOCK_DATA;
-					peer->Send((char*)&client0Flock, sizeof(client0Flock), HIGH_PRIORITY, RELIABLE_ORDERED, 0, clients[0].clientIP, false);
+					//update flocks from incoming data
 				}
 				else if (packet->systemAddress == clients[1].clientIP)
 				{
-					clients[1].clientFlock.update();
-					ClientData client1Flock;
-					client1Flock = clients[1];
-					client1Flock.ID = RECIEVE_FLOCK_DATA;
-					peer->Send((char*)&client1Flock, sizeof(client1Flock), HIGH_PRIORITY, RELIABLE_ORDERED, 0, clients[1].clientIP, false);
+					//update flocks from incoming data
 				}
 
 				//send a request to the clients to send their data
-				ClientData getData;
-				getData.ID = INCOMING_CLIENTDATA;
-				peer->Send((char*)&getData, sizeof(getData), HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
-
-				
+				//ClientData getData;
+				//getData.ID = INCOMING_CLIENTDATA;
+				//peer->Send((char*)&getData, sizeof(getData), HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
 
 			}
 			break;
+			//jack Malvey
 			case DATA_PUSH:
 			{
+				if (packet->systemAddress == clients[0].clientIP)
+				{
+					clients[0].clientFlock.update();
 
+					RakNet::BitStream client0Flock;
+					clients[0].clientFlock.writeToBitstream(client0Flock, RECIEVE_FLOCK_DATA);
+					peer->Send(&client0Flock, HIGH_PRIORITY, RELIABLE_ORDERED, 0, clients[0].clientIP, false);
+
+					if (clients[1].instantiated == true)
+					{
+						clients[1].clientFlock.update();
+
+						RakNet::BitStream client1Flock;
+						clients[1].clientFlock.writeToBitstream(client1Flock, RECIEVE_FLOCK2_DATA);
+						peer->Send(&client1Flock, HIGH_PRIORITY, RELIABLE_ORDERED, 0, clients[0].clientIP, false);
+					}
+				}
+				else if (packet->systemAddress == clients[1].clientIP)
+				{
+					if (clients[0].instantiated == true)
+					{
+						clients[0].clientFlock.update();
+
+						RakNet::BitStream client0Flock;
+						clients[0].clientFlock.writeToBitstream(client0Flock, RECIEVE_FLOCK2_DATA);
+						peer->Send(&client0Flock, HIGH_PRIORITY, RELIABLE_ORDERED, 0, clients[1].clientIP, false);
+					}
+					clients[1].clientFlock.update();
+
+					RakNet::BitStream client1Flock;
+					clients[1].clientFlock.writeToBitstream(client1Flock, RECIEVE_FLOCK_DATA);
+					peer->Send(&client1Flock, HIGH_PRIORITY, RELIABLE_ORDERED, 0, clients[1].clientIP, false);
+				}
 			}
 			break;
 			//Jack
 			case DATA_SHARE:
 			{
+				if (packet->systemAddress == clients[0].clientIP)
+				{
+
+					if (clients[1].instantiated == true)
+					{
+						RakNet::BitStream client1Flock;
+						clients[0].clientFlock.readFromBitstream(packet);
+						clients[0].clientFlock.writeToBitstream(client1Flock, RECIEVE_FLOCK2_DATA);
+						peer->Send(&client1Flock, HIGH_PRIORITY, RELIABLE_ORDERED, 0, clients[1].clientIP, false);
 					}
+				}
+				else if (packet->systemAddress == clients[1].clientIP)
+				{
+
+					if (clients[0].instantiated == true)
+					{
+						RakNet::BitStream client0Flock;
+						clients[1].clientFlock.readFromBitstream(packet);
+						clients[1].clientFlock.writeToBitstream(client0Flock, RECIEVE_FLOCK2_DATA);
+						peer->Send(&client0Flock, HIGH_PRIORITY, RELIABLE_ORDERED, 0, clients[0].clientIP, false);
+					}
+				}
+			}
 			break;
 			//Jack
 			case DATA_COUPLED:
