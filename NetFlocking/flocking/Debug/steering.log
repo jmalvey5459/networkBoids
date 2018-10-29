@@ -1,6 +1,6 @@
 ﻿  Client_Main.cpp
 c:\users\john.malvey\desktop\networkboids\netflocking\flocking\client_main.cpp(55): warning C4309: 'initializing': truncation of constant value
-c:\users\john.malvey\desktop\networkboids\netflocking\flocking\client_main.cpp(73): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+c:\users\john.malvey\desktop\networkboids\netflocking\flocking\client_main.cpp(74): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\string.h(137): note: see declaration of 'strcpy'
   steering.vcxproj -> C:\Users\john.malvey\Desktop\networkBoids\NetFlocking\flocking\Debug\steering.exe
   steering.vcxproj -> C:\Users\john.malvey\Desktop\networkBoids\NetFlocking\flocking\Debug\steering.pdb (Full PDB)

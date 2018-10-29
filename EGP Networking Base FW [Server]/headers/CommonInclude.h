@@ -29,6 +29,7 @@ enum GameMessages
 	RECIEVE_FLOCK2_DATA,
 	RECIEVE_COUPLEDFLOCK_DATA,
 	GET_CLIENT_IP,
+	GET_ORDER,
 };
 
 #pragma pack(push, 1)

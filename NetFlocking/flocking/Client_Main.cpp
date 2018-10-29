@@ -5,7 +5,7 @@
 // 10-30-2018
 //
 // Vedant Chaudhari, 1532077
-// John Malvey
+// John Malvey 1005854
 //
 // We certify that this work is entirely our own.The assessor of this project may reproduce this project 
 // and provide copies to other academic staff, and/or communicate a copy of this project to a plagiarism 
@@ -58,6 +58,7 @@ int main(int argc, char *argv[]) {
 	bool twoFlocks = false;
 	bool coupleReadyToSend = false;
 	RakNet::SystemAddress otherClientAddress = RakNet::UNASSIGNED_SYSTEM_ADDRESS;
+	bool isClient1 = false;
 
 	//std::cout << "Flock Size: " << sizeof(Flock) << "\n";
 
@@ -129,15 +130,24 @@ int main(int argc, char *argv[]) {
 			break;
 			case RECIEVE_FLOCK2_DATA:
 			{
-				std::cout << "New Flock Data Recieved\n";
+				//std::cout << "New Flock Data Recieved\n";
 				twoFlocks = true;
 				flock2.readFromBitstream(packet);
-				if (dataMode == COUPLED_MODE)
+				if (dataMode == COUPLED_MODE && packet->systemAddress!= otherClientAddress)
 				{
-					for (int i = NUM_BOIDS; i < ((int)NUM_BOIDS *2); i++)
+					if (isClient1)
 					{
-						//fill the second half of the coupled flock with the boids list
-						flockCouple.boidsList[i] = flock2.boidsList[i - NUM_BOIDS];
+						for (int i = 0; i < NUM_BOIDS; i++)
+						{
+							flockCouple.boidsList[i] = flock.boidsList[i];
+						}
+					}
+					else
+					{
+						for (int i = NUM_BOIDS; i < ((int)NUM_BOIDS * 2); i++)
+						{
+							flockCouple.boidsList[i] = flock.boidsList[i - NUM_BOIDS];
+						}
 					}
 					//now that the full coupled Boids list is available, we can send it!
 					coupleReadyToSend = true;
@@ -148,6 +158,21 @@ int main(int argc, char *argv[]) {
 			{
 				//std::cout << "New Flock Data Recieved\n";
 				flockCouple.readFromBitstream(packet);
+				flockCouple.update();
+				if (isClient1)
+				{
+					for (int i = 0; i < NUM_BOIDS; i++)
+					{
+						flock.boidsList[i] = flockCouple.boidsList[i];
+					}
+				}
+				else
+				{
+					for (int  i = NUM_BOIDS; i < ((int)NUM_BOIDS * 2); i++)
+					{
+						flock.boidsList[i - NUM_BOIDS] = flockCouple.boidsList[i];
+					}
+				}
 			}
 			break;
 			case GET_CLIENT_IP:
@@ -156,7 +181,10 @@ int main(int argc, char *argv[]) {
 				ClientData *temp = ((ClientData*)packet->data);
 				otherClientAddress = temp->clientIP;
 			}
-			break;
+			break; 
+			case GET_ORDER:
+				isClient1 = true;
+				break;
 			default:
 				//printf("Message with identifier %i has arrived.\n", packet->data[0]);
 				break;
@@ -197,20 +225,32 @@ int main(int argc, char *argv[]) {
 			//Jack
 			case COUPLED_MODE:
 			{
-				if (iTime2 - iTime >= TICK) {
-					iTime = SDL_GetTicks();
+					if (iTime2 - iTime >= TICK) {
+						iTime = SDL_GetTicks();
 
-					RakNet::BitStream sendData;
-					//flock.update();
-					//send state to other client after updating
-					flock.writeToBitstream(sendData, RECIEVE_FLOCK2_DATA);
-					peer->Send(&sendData, HIGH_PRIORITY, RELIABLE_ORDERED, 0, otherClientAddress, false);
-					for (int i = 0; i < NUM_BOIDS; i++)
-					{
-						//fill the first half of the coupled flock with the boids list
-						flockCouple.boidsList[i] = flock.boidsList[i];
+						RakNet::BitStream sendData;
+						flock.update();
+						//send state to other client after updating
+						flock.writeToBitstream(sendData, RECIEVE_FLOCK2_DATA);
+						peer->Send(&sendData, HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
+						if (isClient1)
+						{
+							for (int i = 0; i < NUM_BOIDS; i++)
+							{
+								//fill the first half of the coupled flock with the boids list
+								flockCouple.boidsList[i] = flock.boidsList[i];
+							}
+						}
+						else
+						{
+							for (int i = NUM_BOIDS; i < ((int)NUM_BOIDS * 2); i++)
+							{
+								//fill the second half of the coupled flock with the boids list
+								flockCouple.boidsList[i] = flock.boidsList[i - NUM_BOIDS];
+							}
+						}
 					}
-				}
+				
 				if (coupleReadyToSend)
 				{
 					coupleReadyToSend = false;

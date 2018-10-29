@@ -21,12 +21,13 @@ int main(int const argc, char const *const *const argv)
 	unsigned short serverPort = 60000;
 	const unsigned int MAX_CLIENTS = 3;
 
+
 	GameMessageData serverName;
 
 	//Begin Networking
 	RakNet::RakPeerInterface *peer = RakNet::RakPeerInterface::GetInstance();
 
-
+	
 	ClientData clients[2];
 	Flock coupledFlock((int)NUM_BOIDS * 2);
 
@@ -78,7 +79,7 @@ int main(int const argc, char const *const *const argv)
 			case ID_CONNECTION_LOST:
 				printf("A client lost the connection.\n");
 				break;
-		
+			
 			break;
 
 			//Jack
@@ -95,6 +96,9 @@ int main(int const argc, char const *const *const argv)
 					clients[0].clientIP = packet->systemAddress;
 					clients[0].instantiated = true;
 					printf("Client 1 connected \n");
+					ClientData temp;
+					temp.ID = GET_ORDER;
+					peer->Send((char*)&temp, sizeof(temp), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 
 				}
 				else if (clients[1].instantiated == false)
@@ -200,11 +204,11 @@ int main(int const argc, char const *const *const argv)
 			//Jack
 			case DATA_COUPLED:
 			{
-				std::cout << "data coupled called\n";
+				//std::cout << "data coupled called\n";
 
 				//read coupled flock into bigger flock
 				coupledFlock.readFromBitstream(packet);
-				coupledFlock.update();
+				//coupledFlock.update();
 				if (packet->systemAddress == clients[0].clientIP)
 				{
 					if (clients[1].instantiated == true)
@@ -212,7 +216,7 @@ int main(int const argc, char const *const *const argv)
 
 						RakNet::BitStream client1Flock;
 						coupledFlock.writeToBitstream(client1Flock, RECIEVE_COUPLEDFLOCK_DATA);
-						peer->Send(&client1Flock, HIGH_PRIORITY, RELIABLE_ORDERED, 0, clients[0].clientIP, false);
+						peer->Send(&client1Flock, HIGH_PRIORITY, RELIABLE_ORDERED, 0, clients[1].clientIP, false);
 					}
 				}
 				else if (packet->systemAddress == clients[1].clientIP)
@@ -222,13 +226,28 @@ int main(int const argc, char const *const *const argv)
 
 						RakNet::BitStream client0Flock;
 						coupledFlock.writeToBitstream(client0Flock, RECIEVE_COUPLEDFLOCK_DATA);
-						peer->Send(&client0Flock, HIGH_PRIORITY, RELIABLE_ORDERED, 0, clients[1].clientIP, false);
+						peer->Send(&client0Flock, HIGH_PRIORITY, RELIABLE_ORDERED, 0, clients[0].clientIP, false);
 					}
 					
 				}
 			}
 			break; 
 			case RECIEVE_FLOCK2_DATA:
+			{
+				RakNet::BitStream sendData;
+				clients[0].clientFlock.readFromBitstream(packet);
+				clients[0].clientFlock.writeToBitstream(sendData, RECIEVE_FLOCK2_DATA);
+				if (packet->systemAddress == clients[0].clientIP)
+				{
+					peer->Send(&sendData, HIGH_PRIORITY, RELIABLE_ORDERED, 0, clients[1].clientIP, false);
+
+				}
+				else if (packet->systemAddress == clients[1].clientIP)
+				{
+					
+					peer->Send(&sendData, HIGH_PRIORITY, RELIABLE_ORDERED, 0, clients[0].clientIP, false);
+				}
+			}
 				break;
 			default:
 				printf("Message with identifier %i has arrived.\n", packet->data[0]);
