@@ -20,7 +20,7 @@
 #include <SDL.h>
 #include <vector>
 
-#include "Define.h"
+#include "Define.h" 
 #include "Flock.h"
 #include "SDLInterface.h"
 #include "InputInterface.h"
@@ -57,11 +57,12 @@ int main(int argc, char *argv[]) {
 	RakNet::SocketDescriptor sd;
 	bool twoFlocks = false;
 	bool coupleReadyToSend = false;
+	RakNet::SystemAddress otherClientAddress = RakNet::UNASSIGNED_SYSTEM_ADDRESS;
 
 	//std::cout << "Flock Size: " << sizeof(Flock) << "\n";
 
 	//network modes
-	int dataMode = PUSH_MODE;
+	int dataMode = COUPLED_MODE;
 
 	peer->Startup(1, &sd, 1);
 
@@ -128,11 +129,12 @@ int main(int argc, char *argv[]) {
 			break;
 			case RECIEVE_FLOCK2_DATA:
 			{
+				std::cout << "New Flock Data Recieved\n";
 				twoFlocks = true;
 				flock2.readFromBitstream(packet);
 				if (dataMode == COUPLED_MODE)
 				{
-					for (int i = NUM_BOIDS; i < (NUM_BOIDS*2); i++)
+					for (int i = NUM_BOIDS; i < ((int)NUM_BOIDS *2); i++)
 					{
 						//fill the second half of the coupled flock with the boids list
 						flockCouple.boidsList[i] = flock2.boidsList[i - NUM_BOIDS];
@@ -146,6 +148,13 @@ int main(int argc, char *argv[]) {
 			{
 				//std::cout << "New Flock Data Recieved\n";
 				flockCouple.readFromBitstream(packet);
+			}
+			break;
+			case GET_CLIENT_IP:
+			{
+				std::cout << "client IP recieved\n";
+				ClientData *temp = ((ClientData*)packet->data);
+				otherClientAddress = temp->clientIP;
 			}
 			break;
 			default:
@@ -192,10 +201,10 @@ int main(int argc, char *argv[]) {
 					iTime = SDL_GetTicks();
 
 					RakNet::BitStream sendData;
-					flock.update();
+					//flock.update();
 					//send state to other client after updating
 					flock.writeToBitstream(sendData, RECIEVE_FLOCK2_DATA);
-					peer->Send(&sendData, HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
+					peer->Send(&sendData, HIGH_PRIORITY, RELIABLE_ORDERED, 0, otherClientAddress, false);
 					for (int i = 0; i < NUM_BOIDS; i++)
 					{
 						//fill the first half of the coupled flock with the boids list

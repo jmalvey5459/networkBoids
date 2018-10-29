@@ -28,6 +28,7 @@ int main(int const argc, char const *const *const argv)
 
 
 	ClientData clients[2];
+	Flock coupledFlock((int)NUM_BOIDS * 2);
 
 	RakNet::SocketDescriptor sd(serverPort, 0);
 	peer->Startup(MAX_CLIENTS, &sd, 1);
@@ -62,6 +63,8 @@ int main(int const argc, char const *const *const argv)
 				GameMessageData gameMessage;
 				gameMessage.ID = INCOMING_CLIENTDATA;
 				peer->Send((char*)&gameMessage, sizeof(gameMessage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+
+
 			}
 			break;
 			case ID_REMOTE_NEW_INCOMING_CONNECTION:
@@ -92,6 +95,7 @@ int main(int const argc, char const *const *const argv)
 					clients[0].clientIP = packet->systemAddress;
 					clients[0].instantiated = true;
 					printf("Client 1 connected \n");
+
 				}
 				else if (clients[1].instantiated == false)
 				{
@@ -100,6 +104,14 @@ int main(int const argc, char const *const *const argv)
 					clients[1].clientIP = packet->systemAddress;
 					clients[1].instantiated = true;
 					printf("Client 2 connected \n");
+					ClientData temp;
+					temp.clientIP = clients[0].clientIP;
+					temp.ID = GET_CLIENT_IP;
+					peer->Send((char*)&temp, sizeof(temp), HIGH_PRIORITY, RELIABLE_ORDERED, 0, clients[1].clientIP, false);
+
+					temp.clientIP = clients[1].clientIP;
+					peer->Send((char*)&temp, sizeof(temp), HIGH_PRIORITY, RELIABLE_ORDERED, 0, clients[0].clientIP, false);
+
 				}
 
 				// ****TODO: Default to data push, simulate both ClientData flocks on server and send to peers for rendering
@@ -188,10 +200,11 @@ int main(int const argc, char const *const *const argv)
 			//Jack
 			case DATA_COUPLED:
 			{
-				Flock coupledFlock(NUM_BOIDS*2);
+				std::cout << "data coupled called\n";
 
 				//read coupled flock into bigger flock
 				coupledFlock.readFromBitstream(packet);
+				coupledFlock.update();
 				if (packet->systemAddress == clients[0].clientIP)
 				{
 					if (clients[1].instantiated == true)

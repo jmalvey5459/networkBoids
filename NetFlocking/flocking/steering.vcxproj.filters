@@ -54,12 +54,6 @@
     <ClCompile Include="InputInterface.cpp">
       <Filter>Source Files\Input</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Lab 3\EGP Networking Base FW\source\egp-mancala\util\Thread.c">
-      <Filter>Source Files\Util</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Lab 3\EGP Networking Base FW\source\egp-mancala\events\EventManager.cpp">
-      <Filter>Source Files\Event</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Flock.h">
@@ -82,12 +76,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Lab 3\EGP Networking Base FW\source\egp-mancala\util\Thread.h">
       <Filter>Header Files\Util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Lab 3\EGP Networking Base FW\source\egp-mancala\events\EventManager.h">
-      <Filter>Header Files\Event</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Lab 3\EGP Networking Base FW\source\egp-mancala\events\Event.h">
-      <Filter>Header Files\Event</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
