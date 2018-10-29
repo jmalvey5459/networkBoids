@@ -31,7 +31,7 @@ enum GameMessages
 struct ClientData
 {
 	int ID = SEND_CLIENTDATA;
-	Flock clientFlock = Flock(10);
+	Flock clientFlock;
 	RakNet::SystemAddress clientIP;
 };
 #pragma pack(pop)

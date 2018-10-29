@@ -16,7 +16,6 @@
 #include <vector>
 
 #include "Boid.h"
-#include "ServerDefine.h"
 
 #include "RakNet/DS_List.h"
 #include "RakNet/BitStream.h"
@@ -30,6 +29,7 @@ private:
 public:
 	//std::vector<Boid> boids;
 	DataStructures::List<Boid> boidsList;
+	Flock();
 
 	Flock(int numOfBoids);
 

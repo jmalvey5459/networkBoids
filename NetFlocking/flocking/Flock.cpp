@@ -12,7 +12,16 @@
 // - checking service, which may retain a copy of the project on its database.
 
 #include "Flock.h"
+#include "ServerDefine.h"
+Flock::Flock() {
+	this->count = NUM_BOIDS;
 
+	for (int iter = 0; iter < count; iter++) {
+		//Boid tempBoid = Boid();	// Incase you need to set properties later on
+		//boids.push_back(Boid());
+		boidsList.Push(Boid(), 0, 0);
+	}
+}
 Flock::Flock(int numOfBoids) {
 	this->count = numOfBoids;
 
