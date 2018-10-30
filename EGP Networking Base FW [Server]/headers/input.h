@@ -21,15 +21,18 @@ char getInput(std::string &s)
 		{
 			if (s == "p")
 			{
+				printf("\n");
 				return PUSH;
 			}
 			if (s == "c")
 			{
+				printf("\n");
 				return COUPLE;
 			}
 
 			if (s == "s")
 			{
+				printf("\n");
 				return SHARE;
 			}
 			printf("\n");
