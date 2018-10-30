@@ -4,6 +4,7 @@
 #include <conio.h>
 #include "../headers/CommonInclude.h"
 
+
 enum Commands
 {
 	ENTER = '\n',
