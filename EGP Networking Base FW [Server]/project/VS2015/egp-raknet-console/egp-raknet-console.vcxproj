@@ -181,6 +181,7 @@
     <ClInclude Include="..\..\..\headers\CommonInclude.h" />
     <ClInclude Include="..\..\..\headers\Define.h" />
     <ClInclude Include="..\..\..\headers\Flock.h" />
+    <ClInclude Include="..\..\..\headers\input.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

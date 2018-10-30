@@ -12,6 +12,7 @@
 	-John Malvey 1005854
 */
 #include "../headers/CommonInclude.h"
+#include "../headers/input.h"
 
 
 // entry function
@@ -253,6 +254,37 @@ int main(int const argc, char const *const *const argv)
 				printf("Message with identifier %i has arrived.\n", packet->data[0]);
 				break;
 			}
+		}
+		switch (getInput(placeHolder))
+		{
+			//Public Messages
+
+		case PUSH:
+		{
+			ClientData temp;
+			temp.ID = SETMODE_PUSH;
+			peer->Send((char*)&temp, sizeof(temp), HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
+			placeHolder.clear();
+		}
+		break;
+		case SHARE:
+		{
+			ClientData temp;
+			temp.ID = SETMODE_SHARE;
+			peer->Send((char*)&temp, sizeof(temp), HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
+			placeHolder.clear();
+		}
+		break;
+		case COUPLE:
+		{
+			ClientData temp;
+			temp.ID = SETMODE_COUPLED;
+			peer->Send((char*)&temp, sizeof(temp), HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
+			placeHolder.clear();
+		}
+		break;
+		default:
+			break;
 		}
 	}
 		// shut down networking by destroying peer interface instance
