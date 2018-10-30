@@ -37,6 +37,7 @@ void update() {
 	SDLInterface::getInstance()->render();
 	SDLInterface::getInstance()->background();
 	InputInterface::getInstance()->update();
+	EventManager::getInstance()->execute();
 	SDLInterface::getInstance()->setColor(255, 255, 255, 255);
 }
 
@@ -63,7 +64,7 @@ int main(int argc, char *argv[]) {
 	//std::cout << "Flock Size: " << sizeof(Flock) << "\n";
 
 	//network modes
-	int dataMode = COUPLED_MODE;
+	int dataMode = DATA_COUPLED;
 
 	peer->Startup(1, &sd, 1);
 

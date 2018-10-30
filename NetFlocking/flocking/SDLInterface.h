@@ -21,6 +21,11 @@
 #include "SDL_image.h"
 #include "Define.h"
 
+#include "EventManager.h"
+#include "Event.h"
+
+#include "ChangeDirectionEvent.h"
+
 class SDLInterface {
 private:
 	static SDLInterface* mpInstance;
@@ -48,6 +53,8 @@ public:
 	void drawTriangle(float x, float y, float width, float height, float angle);
 	void drawLine(int x1, int y1, int x2, int y2);
 	void drawCircle(int x, int y, int radius);
+
+	void addEvent(EVENT_TYPE eType);
 
 	// Getters
 	static SDLInterface* getInstance();

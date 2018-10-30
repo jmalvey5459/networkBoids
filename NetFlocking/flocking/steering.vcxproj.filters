@@ -37,6 +37,12 @@
     <Filter Include="Source Files\Event">
       <UniqueIdentifier>{2a084631-39e4-4c52-8998-a13c1b0ed338}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Event\Events">
+      <UniqueIdentifier>{b4445168-8446-431d-8c51-c340f34451db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Event\Events">
+      <UniqueIdentifier>{49a5e95c-9c1f-457f-b7b8-9c50224f2bbf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Boid.cpp">
@@ -62,6 +68,9 @@
     </ClCompile>
     <ClCompile Include="LinkedList.cpp">
       <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="ChangeDirectionEvent.cpp">
+      <Filter>Source Files\Event\Events</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -94,6 +103,9 @@
     </ClInclude>
     <ClInclude Include="Thread.h">
       <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="ChangeDirectionEvent.h">
+      <Filter>Header Files\Event\Events</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

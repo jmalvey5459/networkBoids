@@ -12,8 +12,17 @@
 
 #include "EventManager.h"
 
+EventManager* EventManager::mpInstance = NULL;
+
 EventManager::EventManager() {
 	eventList = new LinkedList;
+}
+
+EventManager* EventManager::getInstance() {
+	if (mpInstance == NULL)
+		mpInstance = new EventManager();
+
+	return mpInstance;
 }
 
 void EventManager::add(EVENT_TYPE type, Event* e) {

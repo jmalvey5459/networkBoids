@@ -19,10 +19,13 @@
 
 class EventManager {
 private:
+	static EventManager* mpInstance;
 	LinkedList* eventList;
 
 public:
 	EventManager();
+
+	static EventManager* getInstance();
 
 	void add(EVENT_TYPE type, Event* e);
 	void execute();

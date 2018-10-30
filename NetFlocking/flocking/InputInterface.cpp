@@ -14,6 +14,8 @@
 #include "InputInterface.h"
 #include "SDLInterface.h"
 
+#include "EventManager.h"
+
 #include "SDL.h"
 
 InputInterface* InputInterface::mpInstance = NULL;
@@ -68,6 +70,8 @@ void InputInterface::update() {
 			case SDLK_ESCAPE:
 				SDLInterface::getInstance()->isExit = true;
 				break;
+			case SDLK_d:
+				
 			}
 			break;
 		case SDL_KEYUP:
