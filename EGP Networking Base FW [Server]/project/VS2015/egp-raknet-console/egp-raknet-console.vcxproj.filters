@@ -41,5 +41,8 @@
     <ClInclude Include="..\..\..\headers\Define.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\headers\input.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
